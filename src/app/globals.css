@@ -119,6 +119,28 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Cursor pointer sur tous les éléments interactifs */
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="file"]::-webkit-file-upload-button,
+  a,
+  label,
+  select,
+  [tabindex]:not([tabindex="-1"]),
+  .cursor-pointer {
+    cursor: pointer;
+  }
+  
+  /* Cursor pointer pour les composants personnalisés */
+  [data-radix-collection-item],
+  [data-state],
+  .clickable {
+    cursor: pointer;
+  }
 }
 
 @layer utilities {
@@ -163,6 +185,19 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
+  }
+  
+  /* Cursors utilitaires */
+  .cursor-pointer {
+    cursor: pointer !important;
+  }
+  
+  .cursor-not-allowed {
+    cursor: not-allowed !important;
+  }
+  
+  .cursor-default {
+    cursor: default !important;
   }
   
   /* Effet de glassmorphism */
