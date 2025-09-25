@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState, memo, useCallback } from 'react';
 import Link from 'next/link';
 import { Product } from '@/types';
 import { useCart } from '@/hooks/useCart';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 
 interface ProductCardProps {
@@ -17,13 +17,13 @@ interface ProductCardProps {
   isFavorite?: boolean;
 }
 
-export function ProductCard({ 
+function ProductCardComponent({ 
   product, 
   onAddToCart, 
   onToggleFavorite, 
   isFavorite = false 
 }: ProductCardProps) {
-  const { isInCart, getItemQuantity } = useCart();
+  const { isInCart, getItemQuantity, addItem } = useCart();
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
@@ -34,17 +34,21 @@ export function ProductCard({
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onAddToCart?.(product);
-  };
+    // Un seul appel pour éviter l'ajout double
+    addItem(product);
+    if (onAddToCart) {
+      onAddToCart(product);
+    }
+  }, [addItem, product, onAddToCart]);
 
-  const handleToggleFavorite = (e: React.MouseEvent) => {
+  const handleToggleFavorite = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onToggleFavorite?.(product.id);
-  };
+  }, [onToggleFavorite, product.id]);
 
   return (
     <Card 
@@ -54,16 +58,18 @@ export function ProductCard({
     >
       <CardContent className="p-0">
         
-        {/* Image Container */}
+          {/* Image Container */}
         <div className="relative overflow-hidden bg-gray-50">
-          <Link href={`/products/${product.id}`}>
+          <Link href={`/products/${product.id}`} prefetch={true}>
             <div className="relative h-64 w-full">
-              <Image
+              <OptimizedImage
                 src={product.images[currentImageIndex] || product.images[0]}
                 alt={product.name}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                className="transition-transform duration-500 group-hover:scale-110"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority={false}
+                loading="lazy"
               />
               
               {/* Image Navigation Dots */}
@@ -123,16 +129,15 @@ export function ProductCard({
                 }`} 
               />
             </Button>
-            <Button
-              size="icon"
-              variant="secondary"
-              className="h-9 w-9 rounded-full shadow-lg backdrop-blur-sm bg-white/90 hover:bg-white"
-              asChild
-            >
-              <Link href={`/products/${product.id}`}>
+            <Link href={`/products/${product.id}`} prefetch={true}>
+              <Button
+                size="icon"
+                variant="secondary"
+                className="h-9 w-9 rounded-full shadow-lg backdrop-blur-sm bg-white/90 hover:bg-white"
+              >
                 <Eye className="h-4 w-4 text-gray-600" />
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
 
           {/* Stock épuisé overlay */}
@@ -155,7 +160,7 @@ export function ProductCard({
           </div>
 
           {/* Nom du produit */}
-          <Link href={`/products/${product.id}`}>
+          <Link href={`/products/${product.id}`} prefetch={true}>
             <h3 className="font-semibold text-lg line-clamp-2 hover:text-primary transition-colors leading-tight">
               {product.name}
             </h3>
@@ -219,3 +224,13 @@ export function ProductCard({
     </Card>
   );
 }
+
+// Memoization pour éviter les re-renders inutiles
+export const ProductCard = memo(ProductCardComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.product.id === nextProps.product.id &&
+    prevProps.isFavorite === nextProps.isFavorite &&
+    prevProps.onAddToCart === nextProps.onAddToCart &&
+    prevProps.onToggleFavorite === nextProps.onToggleFavorite
+  );
+});

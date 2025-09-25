@@ -45,13 +45,23 @@ Le site sera accessible sur [http://localhost:3000](http://localhost:3000)
 - [x] Système de recherche et filtres
 - [x] Panier d'achat (sidebar)
 - [x] Design mobile-first
+- [x] Page 404 avec glassmorphisme
+- [x] Police Inter (style Vite.dev)
+- [x] Icons Lucide React professionnels
 
-### Phase 3: Gestion des données 📊
-- [ ] API Routes Next.js
-- [ ] Modèles de données (produits, utilisateurs, commandes)
-- [ ] Base de données (prisma + sqlite en dev)
-- [ ] Gestion d'état global (context ou zustand)
-- [ ] Cache et optimisations
+### Phase 3: Backend & Base de données 🗄️
+> **Note**: Nous intégrerons **Supabase** lors d'une phase ultérieure pour :
+> - Base de données PostgreSQL
+> - Authentification complète
+> - APIs auto-générées
+> - Real-time features
+> - Storage pour les images
+
+- [ ] ~~API Routes Next.js~~ → **Supabase** (plus tard)
+- [ ] ~~Modèles de données locaux~~ → **Supabase** (plus tard)
+- [ ] ~~Base de données locale~~ → **Supabase** (plus tard)
+- [x] Gestion d'état frontend (Context API)
+- [x] Cache localStorage pour le panier
 
 ### Phase 4: Authentification 🔐
 - [ ] Système d'inscription/connexion

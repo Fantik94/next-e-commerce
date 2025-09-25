@@ -50,8 +50,8 @@ export const products: Product[] = [
     category: 'Smartphones & Tablettes',
     brand: 'Apple',
     images: [
-      'https://images.unsplash.com/photo-1592286526281-a6e1fc8b8ec0?w=500',
-      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500'
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80',
+      'https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=500&q=80'
     ],
     stock: 15,
     rating: 4.8,

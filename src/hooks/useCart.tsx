@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { CartItem, Cart, Product } from '@/types';
+import { useLoading } from './useLoading';
 
 // Actions pour le reducer
 type CartAction =

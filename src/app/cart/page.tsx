@@ -26,7 +26,9 @@ export default function CartPage() {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-lg mx-auto text-center space-y-6">
-          <div className="text-8xl mb-6">🛒</div>
+          <div className="flex items-center justify-center w-24 h-24 mx-auto mb-6 rounded-full bg-gray-100">
+            <ShoppingCart className="h-12 w-12 text-gray-400" />
+          </div>
           <h1 className="text-2xl font-bold text-gray-900">Votre panier est vide</h1>
           <p className="text-gray-600">
             Découvrez notre sélection de produits et ajoutez vos coups de cœur à votre panier !

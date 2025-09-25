@@ -18,7 +18,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2" prefetch={true}>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Zap className="h-5 w-5" />
             </div>
@@ -31,15 +31,17 @@ export function Header() {
           {/* Navigation Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link 
-              href="/products" 
+              href="/products"
               className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+              prefetch={true}
             >
               <Package className="h-4 w-4" />
               Produits
             </Link>
             <Link 
-              href="/categories" 
+              href="/categories"
               className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+              prefetch={true}
             >
               <Grid3X3 className="h-4 w-4" />
               Catégories
@@ -47,13 +49,15 @@ export function Header() {
             <Link 
               href="/deals" 
               className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+              prefetch={true}
             >
               <Gamepad2 className="h-4 w-4" />
               Gaming
             </Link>
             <Link 
-              href="/about" 
+              href="/about"
               className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+              prefetch={true}
             >
               <Info className="h-4 w-4" />
               À propos
@@ -112,14 +116,14 @@ export function Header() {
                 </SheetHeader>
                 <nav className="flex flex-col space-y-4 mt-8 px-6">
                   <Link 
-                    href="/products" 
+                    href="/products"
                     className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
                   >
                     <Package className="h-5 w-5" />
                     Produits
                   </Link>
                   <Link 
-                    href="/categories" 
+                    href="/categories"
                     className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
                   >
                     <Grid3X3 className="h-5 w-5" />

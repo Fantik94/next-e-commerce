@@ -255,7 +255,9 @@ export default function ProductsPage() {
         <main className="flex-1">
           {filteredAndSortedProducts.length === 0 ? (
             <div className="text-center py-16">
-              <div className="text-6xl mb-4">🔍</div>
+              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100">
+                <Search className="h-8 w-8 text-gray-400" />
+              </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Aucun produit trouvé
               </h3>

@@ -1,9 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Star, Truck, Shield, Headphones, Gamepad2, Monitor, Smartphone, Tv } from 'lucide-react';
 import { products, categories } from '@/data/products';
+import { ProductCard } from '@/components/product/ProductCard';
 
 export default function Home() {
   // Récupération des produits mis en avant
@@ -28,12 +31,16 @@ export default function Home() {
                 gaming, audio, ordinateurs et bien plus encore.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="text-lg px-8">
-                  Découvrir nos produits
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                <Button size="lg" className="text-lg px-8" asChild>
+                  <Link href="/products">
+                    Découvrir nos produits
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
                 </Button>
-                <Button variant="outline" size="lg" className="text-lg px-8">
-                  Voir les promotions
+                <Button variant="outline" size="lg" className="text-lg px-8" asChild>
+                  <Link href="/deals">
+                    Voir les promotions
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -136,86 +143,34 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
-              <Card key={product.id} className="group hover:shadow-lg transition-shadow">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <img 
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    {product.originalPrice && (
-                      <Badge className="absolute top-2 left-2" variant="destructive">
-                        Promo
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <div>
-                      <h3 className="font-semibold text-lg line-clamp-1">{product.name}</h3>
-                      <p className="text-sm text-gray-600">{product.brand}</p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-gray-500">({product.reviewCount})</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xl font-bold text-primary">{product.price}€</span>
-                        {product.originalPrice && (
-                          <span className="text-sm text-gray-500 line-through">{product.originalPrice}€</span>
-                        )}
-                      </div>
-                      <Button size="sm">Ajouter</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Nouveautés */}
+      {/* Nouveaux produits */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-3xl font-bold">Dernières nouveautés</h2>
-            <p className="text-xl text-gray-600">Soyez les premiers à découvrir nos derniers produits</p>
+          <div className="flex items-center justify-between mb-12">
+            <div>
+              <h2 className="text-3xl font-bold">Nouveautés</h2>
+              <p className="text-xl text-gray-600 mt-2">Les derniers arrivages</p>
+            </div>
+            <Button variant="outline">
+              Voir tout
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {newProducts.map((product) => (
-              <Card key={product.id} className="group hover:shadow-lg transition-shadow">
-                <CardContent className="p-0">
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <img 
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <Badge className="absolute top-2 left-2" variant="secondary">
-                      Nouveau
-                    </Badge>
-                  </div>
-                  <div className="p-6 space-y-4">
-                    <div>
-                      <h3 className="font-semibold text-xl">{product.name}</h3>
-                      <p className="text-gray-600 mt-2 line-clamp-2">{product.description}</p>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-primary">{product.price}€</span>
-                      <Button>Découvrir</Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ProductCard
+                key={product.id}
+                product={product}
+              />
             ))}
           </div>
         </div>

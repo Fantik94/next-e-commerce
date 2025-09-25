@@ -55,7 +55,9 @@ export function CartSidebar({ children }: CartSidebarProps) {
             
             /* Panier vide */
             <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4">
-              <div className="text-6xl mb-4">🛒</div>
+              <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100">
+                <ShoppingCart className="h-8 w-8 text-gray-400" />
+              </div>
               <h3 className="text-lg font-semibold">Votre panier est vide</h3>
               <p className="text-gray-600 text-sm">
                 Découvrez nos produits et ajoutez vos favoris !
