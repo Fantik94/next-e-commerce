@@ -8,10 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/hooks/useCart';
+import { useAuth } from '@/hooks/useAuth';
 import { CartSidebar } from '@/components/cart/CartSidebar';
 
 export function Header() {
   const { cart } = useCart();
+  const { user, isAuthenticated, logout } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -91,9 +93,27 @@ export function Header() {
             </Button>
 
             {/* Compte utilisateur */}
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-2">
+                <span className="hidden md:block text-sm text-gray-600">
+                  Bonjour, {user?.firstName}
+                </span>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={logout}
+                  title="Se déconnecter"
+                >
+                  <User className="h-5 w-5" />
+                </Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/login">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+            )}
 
             {/* Panier */}
             <CartSidebar>
