@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, Search, User, Menu, Zap, Package, Grid3X3, Gamepad2, Info } from 'lucide-react';
+import Image from 'next/image';
+import { ShoppingCart, Search, User, Menu, Package, Grid3X3, Gamepad2, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -18,12 +19,18 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2" prefetch={true}>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Zap className="h-5 w-5" />
+          <Link href="/" className="flex items-center space-x-3" prefetch={true}>
+            <div className="relative h-10 w-10">
+              <Image
+                src="/images/logo.png"
+                alt="DigitalFADA.shop Logo"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
             <div className="text-xl">
-              <span className="font-bold text-gray-900">DigitalFada</span>
+              <span className="font-bold text-gray-900">DigitalFADA</span>
               <span className="font-light text-primary italic">.shop</span>
             </div>
           </Link>

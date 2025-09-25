@@ -1,4 +1,4 @@
-# 💻 DigitalFada.shop - E-commerce Tech & Multimédia
+# 💻 DigitalFADA.shop - E-commerce Tech & Multimédia
 
 Un site e-commerce spécialisé dans les produits technologiques et multimédia, créé avec Next.js, TypeScript, Tailwind CSS et shadcn/ui.
 

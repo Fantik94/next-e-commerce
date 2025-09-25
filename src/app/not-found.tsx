@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Home, Search, ArrowLeft, Zap } from 'lucide-react';
+import { Home, Search, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -53,8 +54,15 @@ export default function NotFound() {
           {/* Logo animé */}
           <div className="mb-8 flex justify-center">
             <div className="relative">
-              <div className="w-20 h-20 rounded-full glass-orb flex items-center justify-center mb-4">
-                <Zap className="w-10 h-10 text-emerald-400 animate-pulse" />
+              <div className="w-20 h-20 rounded-full glass-orb flex items-center justify-center mb-4 p-4">
+                <div className="relative w-12 h-12">
+                  <Image
+                    src="/images/logo.png"
+                    alt="DigitalFADA.shop Logo"
+                    fill
+                    className="object-contain animate-pulse"
+                  />
+                </div>
               </div>
               <div className="absolute inset-0 w-20 h-20 rounded-full bg-gradient-to-r from-emerald-400/20 to-cyan-400/20 animate-ping" />
             </div>
@@ -78,7 +86,7 @@ export default function NotFound() {
             <p className="text-lg text-white/70 leading-relaxed">
               Oups ! Il semblerait que cette page se soit évaporée dans le cyberespace. 
               <br className="hidden sm:block" />
-              Retournons vers des horizons plus <span className="text-emerald-400 font-medium">digitaux</span> et <span className="text-cyan-400 font-medium">fada</span> !
+              Retournons vers des horizons plus <span className="text-emerald-400 font-medium">digitaux</span> et <span className="text-cyan-400 font-medium">FADA</span> !
             </p>
           </div>
 

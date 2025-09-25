@@ -14,8 +14,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DigitalFada.shop - Votre destination tech et multimédia",
-  description: "Découvrez DigitalFada.shop, votre boutique tech spécialisée : gaming, audio, ordinateurs, smartphones et TV. Livraison rapide et garantie qualité.",
+  title: "💻 DigitalFADA.shop - Votre destination tech et multimédia",
+  description: "Découvrez DigitalFADA.shop, votre boutique tech spécialisée : gaming, audio, ordinateurs, smartphones et TV. Livraison rapide et garantie qualité.",
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+    other: [
+      { rel: 'android-chrome-192x192', url: '/android-chrome-192x192.png' },
+      { rel: 'android-chrome-512x512', url: '/android-chrome-512x512.png' },
+    ],
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
@@ -40,6 +52,18 @@ export default function RootLayout({
           rel="dns-prefetch"
           href="https://images.unsplash.com"
         />
+        
+        {/* Meta tags supplémentaires pour PWA */}
+        <meta name="theme-color" content="#3b82f6" />
+        <meta name="application-name" content="DigitalFADA" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="DigitalFADA" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        <meta name="msapplication-TileColor" content="#3b82f6" />
+        <meta name="msapplication-tap-highlight" content="no" />
       </head>
       <body
         className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col`}

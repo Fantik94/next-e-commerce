@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Zap } from 'lucide-react';
+import Image from 'next/image';
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -9,17 +10,22 @@ export function Footer() {
           
           {/* À propos */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Zap className="h-5 w-5" />
+            <div className="flex items-center space-x-3">
+              <div className="relative h-10 w-10">
+                <Image
+                  src="/images/logo.png"
+                  alt="DigitalFADA.shop Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
               <div className="text-xl">
-                <span className="font-bold text-gray-900">DigitalFada</span>
+                <span className="font-bold text-gray-900">DigitalFADA</span>
                 <span className="font-light text-primary italic">.shop</span>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              DigitalFada.shop, votre destination tech et multimédia pour des produits de pointe. 
+              DigitalFADA.shop, votre destination tech et multimédia pour des produits de pointe. 
               Gaming, audio, ordinateurs et bien plus encore.
             </p>
             <div className="flex space-x-4">
@@ -112,7 +118,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="text-muted-foreground">contact@nextcommerce.fr</span>
+                <span className="text-muted-foreground">contact@digitalfada.shop</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
@@ -131,7 +137,7 @@ export function Footer() {
         {/* Bas de page */}
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <div className="text-sm text-muted-foreground">
-            © 2024 NextCommerce. Tous droits réservés.
+            © 2024 DigitalFADA.shop. Tous droits réservés.
           </div>
           <div className="flex space-x-6 text-sm">
             <Link href="/privacy" className="text-muted-foreground hover:text-primary">

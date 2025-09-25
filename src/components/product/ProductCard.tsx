@@ -26,6 +26,7 @@ function ProductCardComponent({
   const { isInCart, getItemQuantity, addItem } = useCart();
   const [isHovered, setIsHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isAdding, setIsAdding] = useState(false); // Protection contre double clic
   
   const inCart = isInCart(product.id);
   const cartQuantity = getItemQuantity(product.id);
@@ -34,15 +35,24 @@ function ProductCardComponent({
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
-  const handleAddToCart = useCallback((e: React.MouseEvent) => {
+  const handleAddToCart = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Un seul appel pour éviter l'ajout double
-    addItem(product);
-    if (onAddToCart) {
-      onAddToCart(product);
+    
+    // Protection contre double clic
+    if (isAdding) return;
+    
+    setIsAdding(true);
+    try {
+      // UN SEUL appel au panier
+      addItem(product);
+      
+      // Petit délai pour éviter les clics multiples
+      await new Promise(resolve => setTimeout(resolve, 300));
+    } finally {
+      setIsAdding(false);
     }
-  }, [addItem, product, onAddToCart]);
+  }, [addItem, product, isAdding]);
 
   const handleToggleFavorite = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -202,7 +212,7 @@ function ProductCardComponent({
           {/* Bouton d'ajout au panier */}
           <Button
             onClick={handleAddToCart}
-            disabled={product.stock === 0}
+            disabled={product.stock === 0 || isAdding}
             className={`w-full transition-all duration-300 ${
               inCart 
                 ? 'bg-green-600 hover:bg-green-700' 
@@ -214,9 +224,11 @@ function ProductCardComponent({
             <ShoppingCart className="h-4 w-4 mr-2" />
             {product.stock === 0 
               ? 'Rupture de stock' 
-              : inCart 
-                ? `Dans le panier (${cartQuantity})`
-                : 'Ajouter au panier'
+              : isAdding
+                ? 'Ajout...'
+                : inCart 
+                  ? `Dans le panier (${cartQuantity})`
+                  : 'Ajouter au panier'
             }
           </Button>
         </div>

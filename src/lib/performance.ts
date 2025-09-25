@@ -1,4 +1,4 @@
-// Optimisations de performance pour DigitalFada.shop
+// Optimisations de performance pour DigitalFADA.shop
 
 // Configuration pour le preloading agressif
 export const linkPreloadConfig = {

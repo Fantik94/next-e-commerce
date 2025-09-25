@@ -27,7 +27,7 @@ export default function Home() {
                 et multimédia
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
-                Bienvenue chez DigitalFada.shop ! Découvrez notre sélection de produits technologiques de pointe : 
+                Bienvenue chez DigitalFADA.shop ! Découvrez notre sélection de produits technologiques de pointe : 
                 gaming, audio, ordinateurs et bien plus encore.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
