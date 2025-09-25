@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Search, Grid, List, SlidersHorizontal } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 export default function ProductsPage() {
   const { addItem } = useCart();
@@ -218,6 +218,9 @@ export default function ProductsPage() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-80 p-0">
+                <SheetHeader className="p-6 pb-4 border-b">
+                  <SheetTitle>Filtres</SheetTitle>
+                </SheetHeader>
                 <div className="p-6">
                   <FiltersComponent
                     filters={searchParams.filters}

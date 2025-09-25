@@ -18,7 +18,7 @@ interface ProductFiltersProps {
   productCount: number;
 }
 
-const brands = ['Apple', 'Samsung', 'Nike', 'Adidas', 'Sony', 'LG', 'Urban Style', 'SportTech', 'LightCo'];
+const brands = ['Apple', 'Sony', 'Samsung', 'ASUS', 'Nintendo', 'JBL', 'Microsoft', 'Bose', 'Logitech', 'LG', 'Valve', 'Corsair', 'Marshall', 'Google', 'Razer', 'Meta'];
 
 export function ProductFilters({ 
   filters, 

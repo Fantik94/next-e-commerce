@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, Zap } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -10,14 +10,17 @@ export function Footer() {
           {/* À propos */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-                E
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Zap className="h-5 w-5" />
               </div>
-              <span className="font-bold text-xl">NextCommerce</span>
+              <div className="text-xl">
+                <span className="font-bold text-gray-900">DigitalFada</span>
+                <span className="font-light text-primary italic">.shop</span>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Votre destination e-commerce pour des produits de qualité. 
-              Une expérience d'achat moderne et sécurisée.
+              DigitalFada.shop, votre destination tech et multimédia pour des produits de pointe. 
+              Gaming, audio, ordinateurs et bien plus encore.
             </p>
             <div className="flex space-x-4">
               <Link href="#" className="text-muted-foreground hover:text-primary">

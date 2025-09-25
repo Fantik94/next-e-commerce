@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, Search, User, Menu } from 'lucide-react';
+import { ShoppingCart, Search, User, Menu, Zap, Package, Grid3X3, Gamepad2, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useCart } from '@/hooks/useCart';
 import { CartSidebar } from '@/components/cart/CartSidebar';
 
@@ -19,36 +19,43 @@ export function Header() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-              E
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Zap className="h-5 w-5" />
             </div>
-            <span className="font-bold text-xl">NextCommerce</span>
+            <div className="text-xl">
+              <span className="font-bold text-gray-900">DigitalFada</span>
+              <span className="font-light text-primary italic">.shop</span>
+            </div>
           </Link>
 
           {/* Navigation Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link 
               href="/products" 
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
             >
+              <Package className="h-4 w-4" />
               Produits
             </Link>
             <Link 
               href="/categories" 
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
             >
+              <Grid3X3 className="h-4 w-4" />
               Catégories
             </Link>
             <Link 
               href="/deals" 
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
             >
-              Promotions
+              <Gamepad2 className="h-4 w-4" />
+              Gaming
             </Link>
             <Link 
               href="/about" 
-              className="text-sm font-medium transition-colors hover:text-primary"
+              className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
             >
+              <Info className="h-4 w-4" />
               À propos
             </Link>
           </nav>
@@ -100,42 +107,51 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-80">
-                <nav className="flex flex-col space-y-4 mt-8">
+                <SheetHeader className="p-6 pb-4 border-b">
+                  <SheetTitle>Menu</SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col space-y-4 mt-8 px-6">
                   <Link 
                     href="/products" 
-                    className="text-lg font-medium transition-colors hover:text-primary"
+                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
                   >
+                    <Package className="h-5 w-5" />
                     Produits
                   </Link>
                   <Link 
                     href="/categories" 
-                    className="text-lg font-medium transition-colors hover:text-primary"
+                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
                   >
+                    <Grid3X3 className="h-5 w-5" />
                     Catégories
                   </Link>
                   <Link 
                     href="/deals" 
-                    className="text-lg font-medium transition-colors hover:text-primary"
+                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
                   >
-                    Promotions
+                    <Gamepad2 className="h-5 w-5" />
+                    Gaming
                   </Link>
                   <Link 
                     href="/about" 
-                    className="text-lg font-medium transition-colors hover:text-primary"
+                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
                   >
+                    <Info className="h-5 w-5" />
                     À propos
                   </Link>
                   <hr className="my-4" />
                   <Link 
                     href="/account" 
-                    className="text-lg font-medium transition-colors hover:text-primary"
+                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
                   >
+                    <User className="h-5 w-5" />
                     Mon compte
                   </Link>
                   <Link 
                     href="/orders" 
-                    className="text-lg font-medium transition-colors hover:text-primary"
+                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
                   >
+                    <ShoppingCart className="h-5 w-5" />
                     Mes commandes
                   </Link>
                 </nav>

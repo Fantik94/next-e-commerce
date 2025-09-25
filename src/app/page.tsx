@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Star, Truck, Shield, Headphones } from 'lucide-react';
+import { ArrowRight, Star, Truck, Shield, Headphones, Gamepad2, Monitor, Smartphone, Tv } from 'lucide-react';
 import { products, categories } from '@/data/products';
 
 export default function Home() {
@@ -19,13 +19,13 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h1 className="text-4xl lg:text-6xl font-bold text-gray-900">
-                L'e-commerce 
-                <span className="text-primary"> moderne</span> 
-                qui vous ressemble
+                Votre destination 
+                <span className="text-primary"> tech</span> 
+                et multimédia
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
-                Découvrez notre sélection de produits de qualité, 
-                avec une expérience d'achat simple et sécurisée.
+                Bienvenue chez DigitalFada.shop ! Découvrez notre sélection de produits technologiques de pointe : 
+                gaming, audio, ordinateurs et bien plus encore.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="text-lg px-8">
@@ -100,15 +100,16 @@ export default function Home() {
             <h2 className="text-3xl font-bold">Nos catégories</h2>
             <p className="text-xl text-gray-600">Trouvez exactement ce que vous cherchez</p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
             {categories.map((category) => (
               <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardContent className="p-6 text-center space-y-4">
-                  <div className="text-4xl mb-4">
-                    {category.name === 'Électronique' && '📱'}
-                    {category.name === 'Mode' && '👔'}
-                    {category.name === 'Maison & Jardin' && '🏠'}
-                    {category.name === 'Sport & Loisirs' && '⚽'}
+                  <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10">
+                    {category.name === 'Gaming' && <Gamepad2 className="h-8 w-8 text-primary" />}
+                    {category.name === 'Audio & Son' && <Headphones className="h-8 w-8 text-primary" />}
+                    {category.name === 'Ordinateurs' && <Monitor className="h-8 w-8 text-primary" />}
+                    {category.name === 'Smartphones & Tablettes' && <Smartphone className="h-8 w-8 text-primary" />}
+                    {category.name === 'TV & Multimédia' && <Tv className="h-8 w-8 text-primary" />}
                   </div>
                   <h3 className="text-xl font-semibold">{category.name}</h3>
                   <p className="text-gray-600 text-sm">{category.description}</p>

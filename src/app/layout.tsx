@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NextCommerce - E-commerce moderne",
-  description: "Votre destination e-commerce pour des produits de qualité. Une expérience d'achat moderne et sécurisée.",
+  title: "DigitalFada.shop - Votre destination tech et multimédia",
+  description: "Découvrez DigitalFada.shop, votre boutique tech spécialisée : gaming, audio, ordinateurs, smartphones et TV. Livraison rapide et garantie qualité.",
 };
 
 export default function RootLayout({
