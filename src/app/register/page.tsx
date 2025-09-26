@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, User, UserPlus, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,12 +19,13 @@ import {
   getPasswordStrength 
 } from '@/lib/auth-validation';
 import { useAuth } from '@/hooks/useAuth';
+import BackToHome from '@/components/ui/back-to-home';
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, register: registerUser, loginWithGoogle } = useAuth();
   const router = useRouter();
 
   // Rediriger si déjà connecté
@@ -64,24 +65,48 @@ export default function RegisterPage() {
         lastName: sanitizeInput(data.lastName),
         email: sanitizeInput(data.email),
         password: data.password,
-        acceptTerms: data.acceptTerms,
       };
       
-      // Simulation d'une requête API
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const result = await registerUser(
+        sanitizedData.email,
+        sanitizedData.password,
+        sanitizedData.firstName,
+        sanitizedData.lastName
+      );
       
-      console.log('Inscription simulée:', sanitizedData);
-      router.push('/login?message=account-created');
+      if (result.success) {
+        console.log('✅ Inscription réussie !');
+        router.push('/login?message=account-created');
+      } else {
+        console.error('❌ Erreur:', result.error);
+        alert(result.error || 'Erreur d\'inscription');
+      }
       
     } catch (error) {
-      console.error('Erreur d\'inscription:', error);
+      console.error('❌ Erreur d\'inscription:', error);
+      alert('Une erreur inattendue s\'est produite.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleSignUp = () => {
-    console.log('Inscription Google simulée');
+  const handleGoogleSignUp = async () => {
+    setIsLoading(true);
+    try {
+      const result = await loginWithGoogle();
+      
+      if (result.success) {
+        console.log('✅ Redirection vers Google...');
+      } else {
+        console.error('❌ Erreur Google:', result.error);
+        alert(result.error || 'Erreur de connexion Google');
+      }
+    } catch (error) {
+      console.error('❌ Erreur Google:', error);
+      alert('Une erreur inattendue s\'est produite.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isAuthenticated) {
@@ -91,14 +116,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen bg-gray-50 relative">
       {/* Bouton retour en haut à gauche */}
-      <div className="absolute top-6 left-6 z-10">
-        <Button variant="ghost" asChild>
-          <Link href="/">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour à l'accueil
-          </Link>
-        </Button>
-      </div>
+      <BackToHome />
 
       <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-lg w-full">{/* Largeur réduite pour un meilleur équilibre */}

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Mail, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -15,10 +15,13 @@ import {
   type ForgotPasswordFormData, 
   sanitizeInput 
 } from '@/lib/auth-validation';
+import { useAuth } from '@/hooks/useAuth';
+import BackToHome from '@/components/ui/back-to-home';
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
+  const { resetPassword } = useAuth();
 
   const {
     register,
@@ -38,16 +41,19 @@ export default function ForgotPasswordPage() {
     try {
       const sanitizedEmail = sanitizeInput(data.email);
       
-      // Simulation d'une requête API
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await resetPassword(sanitizedEmail);
       
-      console.log('Demande de réinitialisation pour:', sanitizedEmail);
-      
-      // Marquer comme envoyé
-      setIsEmailSent(true);
+      if (result.success) {
+        console.log('✅ Email de réinitialisation envoyé !');
+        setIsEmailSent(true);
+      } else {
+        console.error('❌ Erreur:', result.error);
+        alert(result.error || 'Erreur lors de l\'envoi');
+      }
       
     } catch (error) {
-      console.error('Erreur lors de l\'envoi:', error);
+      console.error('❌ Erreur lors de l\'envoi:', error);
+      alert('Une erreur inattendue s\'est produite.');
     } finally {
       setIsLoading(false);
     }
@@ -75,14 +81,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen bg-gray-50 relative">
       {/* Bouton retour en haut à gauche */}
-      <div className="absolute top-6 left-6 z-10">
-        <Button variant="ghost" asChild>
-          <Link href="/login">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour à la connexion
-          </Link>
-        </Button>
-      </div>
+      <BackToHome href="/login" label="Retour à la connexion" />
 
       <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-lg w-full">

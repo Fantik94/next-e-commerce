@@ -96,15 +96,17 @@ export function Header() {
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
                 <span className="hidden md:block text-sm text-gray-600">
-                  Bonjour, {user?.firstName}
+                  Bonjour, {user?.firstName || 'Utilisateur'}
                 </span>
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={logout}
-                  title="Se déconnecter"
+                  asChild
+                  title="Mon profil"
                 >
-                  <User className="h-5 w-5" />
+                  <Link href="/profile">
+                    <User className="h-5 w-5" />
+                  </Link>
                 </Button>
               </div>
             ) : (
@@ -171,20 +173,32 @@ export function Header() {
                     À propos
                   </Link>
                   <hr className="my-4" />
-                  <Link 
-                    href="/account" 
-                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
-                  >
-                    <User className="h-5 w-5" />
-                    Mon compte
-                  </Link>
-                  <Link 
-                    href="/orders" 
-                    className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    Mes commandes
-                  </Link>
+                  {isAuthenticated ? (
+                    <>
+                      <Link 
+                        href="/profile" 
+                        className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
+                      >
+                        <User className="h-5 w-5" />
+                        Mon profil
+                      </Link>
+                      <Link 
+                        href="/orders" 
+                        className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
+                      >
+                        <ShoppingCart className="h-5 w-5" />
+                        Mes commandes
+                      </Link>
+                    </>
+                  ) : (
+                    <Link 
+                      href="/login" 
+                      className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary"
+                    >
+                      <User className="h-5 w-5" />
+                      Se connecter
+                    </Link>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>

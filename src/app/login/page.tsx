@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Mail, Lock, LogIn, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, LogIn, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -14,11 +14,12 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Form, FormField, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { signInSchema, type SignInFormData, sanitizeInput } from '@/lib/auth-validation';
 import { useAuth } from '@/hooks/useAuth';
+import BackToHome from '@/components/ui/back-to-home';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, login, loginWithGoogle } = useAuth();
   const router = useRouter();
 
   // Rediriger si déjà connecté
@@ -48,16 +49,41 @@ export default function LoginPage() {
     
     try {
       const sanitizedEmail = sanitizeInput(data.email);
-      await login(sanitizedEmail, data.password);
+      const result = await login(sanitizedEmail, data.password);
+      
+      if (result.success) {
+        // La redirection se fera automatiquement grâce à useEffect
+        console.log('✅ Connexion réussie !');
+      } else {
+        // Afficher l'erreur (tu peux ajouter toast plus tard)
+        console.error('❌ Erreur:', result.error);
+        alert(result.error || 'Erreur de connexion');
+      }
     } catch (error) {
-      console.error('Erreur de connexion:', error);
+      console.error('❌ Erreur de connexion:', error);
+      alert('Une erreur inattendue s\'est produite.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log('Connexion Google simulée');
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const result = await loginWithGoogle();
+      
+      if (result.success) {
+        console.log('✅ Redirection vers Google...');
+      } else {
+        console.error('❌ Erreur Google:', result.error);
+        alert(result.error || 'Erreur de connexion Google');
+      }
+    } catch (error) {
+      console.error('❌ Erreur Google:', error);
+      alert('Une erreur inattendue s\'est produite.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (isAuthenticated) {
@@ -67,14 +93,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 relative">
       {/* Bouton retour en haut à gauche */}
-      <div className="absolute top-6 left-6 z-10">
-        <Button variant="ghost" asChild>
-          <Link href="/">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour à l'accueil
-          </Link>
-        </Button>
-      </div>
+      <BackToHome />
 
       <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-lg w-full">{/* Largeur réduite pour un meilleur équilibre */}
