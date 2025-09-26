@@ -77,7 +77,7 @@ export default function LoginPage() {
       </div>
 
       <div className="flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-xl w-full">{/* Encore plus large pour un meilleur équilibre */}
+        <div className="max-w-lg w-full">{/* Largeur réduite pour un meilleur équilibre */}
 
         <Card>
           <CardHeader className="space-y-1 pb-6">
