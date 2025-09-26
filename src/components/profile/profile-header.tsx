@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { Camera, User, Mail, Calendar, Shield } from 'lucide-react';
+import React from 'react';
+import { User, Mail, Calendar, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
+import AvatarUpload from './avatar-upload';
 
 export function ProfileHeader() {
   const { user } = useAuth();
-  const [imageError, setImageError] = useState(false);
 
   if (!user) {
     return (
@@ -43,31 +42,7 @@ export function ProfileHeader() {
       <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start">
         {/* Avatar section */}
         <div className="relative flex-shrink-0">
-          <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-background shadow-lg">
-            {user.avatar && !imageError ? (
-              <Image
-                src={user.avatar}
-                alt={`Photo de profil de ${displayName}`}
-                fill
-                className="object-cover"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-600">
-                <User className="h-10 w-10 text-white" />
-              </div>
-            )}
-          </div>
-          
-          {/* Camera overlay */}
-          <Button
-            size="sm"
-            variant="secondary"
-            className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full p-0 shadow-md"
-          >
-            <Camera className="h-4 w-4" />
-            <span className="sr-only">Changer la photo de profil</span>
-          </Button>
+          <AvatarUpload size="md" showUploadText={false} />
         </div>
 
         {/* User info section */}

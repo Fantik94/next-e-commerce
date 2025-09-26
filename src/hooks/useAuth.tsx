@@ -11,6 +11,48 @@ interface UserProfile {
   lastName?: string;
   avatar?: string;
   role: 'user' | 'admin';
+  
+  // Informations personnelles e-commerce
+  phone?: string;
+  dateOfBirth?: Date;
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
+  
+  // Adresse par défaut
+  defaultAddress?: {
+    street: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    isBilling: boolean;
+  };
+  
+  // Préférences e-commerce
+  newsletterSubscribed: boolean;
+  marketingEmails: boolean;
+  orderNotifications: boolean;
+  languagePreference: 'fr' | 'en' | 'es' | 'de';
+  currencyPreference: 'EUR' | 'USD' | 'GBP';
+  
+  // Informations de connexion
+  authProvider: 'email' | 'google' | 'facebook' | 'apple';
+  isOAuthUser: boolean;
+  oauthProviderId?: string;
+  
+  // Préférences d'affichage
+  themePreference: 'light' | 'dark' | 'system';
+  
+  // Informations de sécurité
+  twoFactorEnabled: boolean;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  
+  // Métadonnées
+  lastLoginAt?: Date;
+  lastOrderAt?: Date;
+  totalOrders: number;
+  totalSpent: number;
+  
+  // Timestamps
   createdAt: Date;
   updatedAt: Date;
 }
@@ -70,6 +112,42 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         lastName: data.last_name,
         avatar: data.avatar_url,
         role: data.role,
+        
+        // Informations personnelles e-commerce
+        phone: data.phone,
+        dateOfBirth: data.date_of_birth ? new Date(data.date_of_birth) : undefined,
+        gender: data.gender,
+        
+        // Adresse par défaut
+        defaultAddress: data.default_address,
+        
+        // Préférences e-commerce
+        newsletterSubscribed: data.newsletter_subscribed ?? false,
+        marketingEmails: data.marketing_emails ?? false,
+        orderNotifications: data.order_notifications ?? true,
+        languagePreference: data.language_preference ?? 'fr',
+        currencyPreference: data.currency_preference ?? 'EUR',
+        
+        // Informations de connexion
+        authProvider: data.auth_provider ?? 'email',
+        isOAuthUser: data.is_oauth_user ?? false,
+        oauthProviderId: data.oauth_provider_id,
+        
+        // Préférences d'affichage
+        themePreference: data.theme_preference ?? 'system',
+        
+        // Informations de sécurité
+        twoFactorEnabled: data.two_factor_enabled ?? false,
+        emailVerified: data.email_verified ?? false,
+        phoneVerified: data.phone_verified ?? false,
+        
+        // Métadonnées
+        lastLoginAt: data.last_login_at ? new Date(data.last_login_at) : undefined,
+        lastOrderAt: data.last_order_at ? new Date(data.last_order_at) : undefined,
+        totalOrders: data.total_orders ?? 0,
+        totalSpent: data.total_spent ?? 0,
+        
+        // Timestamps
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
       };
@@ -243,9 +321,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     try {
       const updateData: any = {};
+      
+      // Mapper les champs du frontend vers la base de données
       if (data.firstName !== undefined) updateData.first_name = data.firstName;
       if (data.lastName !== undefined) updateData.last_name = data.lastName;
       if (data.avatar !== undefined) updateData.avatar_url = data.avatar;
+      if (data.phone !== undefined) updateData.phone = data.phone;
+      if (data.dateOfBirth !== undefined) updateData.date_of_birth = data.dateOfBirth?.toISOString().split('T')[0];
+      if (data.gender !== undefined) updateData.gender = data.gender;
+      if (data.defaultAddress !== undefined) updateData.default_address = data.defaultAddress;
+      if (data.newsletterSubscribed !== undefined) updateData.newsletter_subscribed = data.newsletterSubscribed;
+      if (data.marketingEmails !== undefined) updateData.marketing_emails = data.marketingEmails;
+      if (data.orderNotifications !== undefined) updateData.order_notifications = data.orderNotifications;
+      if (data.languagePreference !== undefined) updateData.language_preference = data.languagePreference;
+      if (data.currencyPreference !== undefined) updateData.currency_preference = data.currencyPreference;
+      if (data.themePreference !== undefined) updateData.theme_preference = data.themePreference;
 
       const { error } = await supabase
         .from('profiles')
@@ -260,7 +350,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       // Mettre à jour le state local
-      setUser(prev => prev ? { ...prev, ...data } : null);
+      setUser(prev => prev ? { ...prev, ...data, updatedAt: new Date() } : null);
       
       return { success: true };
     } catch (error: any) {
