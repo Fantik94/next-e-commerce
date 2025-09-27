@@ -7,6 +7,7 @@ import { CartProvider } from "@/hooks/useCart";
 import { LoadingProvider } from "@/hooks/useLoading";
 import { AuthProvider } from "@/hooks/useAuth";
 import { LoadingOverlay } from "@/components/ui/loading-overlay";
+import { ToastProvider } from "@/hooks/useToast";
 import { debugPerformance } from "@/lib/performance";
 
 const inter = Inter({
@@ -80,16 +81,18 @@ export default function RootLayout({
         className={`${inter.variable} font-sans antialiased min-h-screen flex flex-col`}
       >
         <LoadingProvider>
-          <AuthProvider>
-            <CartProvider>
-              <Header />
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
-              <LoadingOverlay />
-            </CartProvider>
-          </AuthProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <CartProvider>
+                <Header />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+                <LoadingOverlay />
+              </CartProvider>
+            </AuthProvider>
+          </ToastProvider>
         </LoadingProvider>
       </body>
     </html>

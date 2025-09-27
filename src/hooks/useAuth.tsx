@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/useToast';
 
 interface UserProfile {
   id: string;
@@ -64,7 +65,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string }>;
+  register: (email: string, password: string, firstName: string, lastName: string) => Promise<{ success: boolean; error?: string; requiresEmailConfirmation?: boolean }>;
   loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
@@ -89,7 +90,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitializing, setIsInitializing] = useState(true); // Loading initial de l'app
+  const [isLoading, setIsLoading] = useState(false); // Loading des actions (login, register, etc.)
+  const { showSuccess, showError } = useToast();
 
   // Fonction pour récupérer le profil utilisateur depuis la table profiles
   const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
@@ -161,6 +164,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     // Récupérer la session initiale
     const getInitialSession = async () => {
+      console.log('🔄 Initialisation de useAuth...');
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
@@ -177,7 +181,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } catch (error) {
         console.error('❌ Erreur inattendue:', error);
       } finally {
-        setIsLoading(false);
+        console.log('✅ Initialisation de useAuth terminée');
+        setIsInitializing(false);
       }
     };
 
@@ -198,7 +203,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUser(null);
         }
         
-        setIsLoading(false);
+        setIsInitializing(false);
       }
     );
 
@@ -215,10 +220,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        showError('Erreur de connexion', error.message);
         return { success: false, error: error.message };
       }
 
       console.log('✅ Connexion réussie !');
+      showSuccess('Connexion réussie !', 'Vous êtes maintenant connecté à votre compte.');
       return { success: true };
     } catch (error: any) {
       console.error('❌ Erreur de connexion:', error);
@@ -232,6 +239,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
     setIsLoading(true);
     try {
+      console.log('🔄 Début de l\'inscription pour:', email);
+
+      // Vérifier d'abord si l'email existe déjà (mais ne pas bloquer si erreur)
+      try {
+        const { data: existingUser, error: checkError } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('email', email)
+          .single();
+
+        if (existingUser && !checkError) {
+          console.log('❌ Email déjà utilisé:', email);
+          showError('Email déjà utilisé', 'Un compte avec cet email existe déjà. Essayez de vous connecter.');
+          return { success: false, error: 'Un compte avec cet email existe déjà.' };
+        }
+      } catch (checkError) {
+        // Si la vérification échoue, on continue quand même l'inscription
+        console.log('⚠️ Impossible de vérifier l\'email, on continue:', checkError);
+      }
+
+      console.log('🔄 Création du compte Supabase...');
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -243,16 +271,41 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         },
       });
 
+      console.log('📊 Résultat inscription:', { data, error });
+
       if (error) {
+        console.error('❌ Erreur Supabase:', error);
+        showError('Erreur d\'inscription', error.message);
         return { success: false, error: error.message };
       }
 
-      console.log('✅ Inscription réussie !');
-      return { success: true };
+      if (data.user) {
+        console.log('✅ Utilisateur créé:', data.user.id);
+        
+        // Attendre un peu pour laisser le trigger se déclencher
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        console.log('✅ Inscription réussie !');
+        
+        // Vérifier si l'email doit être confirmé
+        if (!data.session) {
+          showSuccess('Inscription réussie !', 'Vérifiez votre email pour activer votre compte.');
+          return { success: true, requiresEmailConfirmation: true };
+        } else {
+          showSuccess('Inscription réussie !', 'Votre compte a été créé avec succès. Bienvenue !');
+          return { success: true };
+        }
+      } else {
+        console.log('⚠️ Pas d\'utilisateur retourné');
+        showError('Erreur d\'inscription', 'Aucun utilisateur créé.');
+        return { success: false, error: 'Aucun utilisateur créé.' };
+      }
     } catch (error: any) {
-      console.error('❌ Erreur d\'inscription:', error);
+      console.error('❌ Erreur inattendue d\'inscription:', error);
+      showError('Erreur d\'inscription', 'Une erreur inattendue s\'est produite.');
       return { success: false, error: 'Une erreur inattendue s\'est produite.' };
     } finally {
+      console.log('🔄 Fin de l\'inscription, arrêt du loading');
       setIsLoading(false);
     }
   };
@@ -268,9 +321,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        showError('Erreur de connexion Google', error.message);
         return { success: false, error: error.message };
       }
 
+      // Note: Le succès sera affiché après la redirection
       return { success: true };
     } catch (error: any) {
       console.error('❌ Erreur de connexion Google:', error);
@@ -285,8 +340,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('❌ Erreur lors de la déconnexion:', error);
+        showError('Erreur de déconnexion', 'Une erreur s\'est produite lors de la déconnexion.');
       } else {
         console.log('✅ Déconnexion réussie !');
+        showSuccess('À bientôt !', 'Vous avez été déconnecté avec succès.');
       }
     } catch (error) {
       console.error('❌ Erreur inattendue lors de la déconnexion:', error);
@@ -303,9 +360,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        showError('Erreur de réinitialisation', error.message);
         return { success: false, error: error.message };
       }
 
+      showSuccess('Email envoyé !', 'Vérifiez votre boîte mail pour réinitialiser votre mot de passe.');
       return { success: true };
     } catch (error: any) {
       console.error('❌ Erreur de réinitialisation:', error);
@@ -346,11 +405,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         .eq('id', user.id);
 
       if (error) {
+        showError('Erreur de mise à jour', error.message);
         return { success: false, error: error.message };
       }
 
       // Mettre à jour le state local
       setUser(prev => prev ? { ...prev, ...data, updatedAt: new Date() } : null);
+      showSuccess('Profil mis à jour !', 'Vos informations ont été sauvegardées avec succès.');
       
       return { success: true };
     } catch (error: any) {
@@ -364,7 +425,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     supabaseUser,
     session,
     isAuthenticated: !!user,
-    isLoading,
+    isLoading: isInitializing || isLoading, // Combine les deux états
     login,
     register,
     loginWithGoogle,

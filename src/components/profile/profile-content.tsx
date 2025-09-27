@@ -26,11 +26,12 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Form, FormField, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { FormField, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { sanitizeInput } from '@/lib/auth-validation';
 import { useRouter } from 'next/navigation';
+import { AddressManager } from '@/components/profile/address-manager';
 
 // Schema pour l'édition du profil
 const profileSchema = z.object({
@@ -59,6 +60,14 @@ const profileSchema = z.object({
   gender: z
     .enum(['male', 'female', 'other', 'prefer_not_to_say', ''])
     .optional(),
+    
+  // Préférences
+  newsletterSubscribed: z.boolean().optional(),
+  marketingEmails: z.boolean().optional(),
+  orderNotifications: z.boolean().optional(),
+  languagePreference: z.enum(['fr', 'en', 'es', 'de']).optional(),
+  currencyPreference: z.enum(['EUR', 'USD', 'GBP']).optional(),
+  themePreference: z.enum(['light', 'dark', 'system']).optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -77,6 +86,12 @@ export function ProfileContent() {
       phone: user?.phone || '',
       dateOfBirth: user?.dateOfBirth ? user.dateOfBirth.toISOString().split('T')[0] : '',
       gender: user?.gender || '',
+      newsletterSubscribed: user?.newsletterSubscribed || false,
+      marketingEmails: user?.marketingEmails || false,
+      orderNotifications: user?.orderNotifications || true,
+      languagePreference: user?.languagePreference || 'fr',
+      currencyPreference: user?.currencyPreference || 'EUR',
+      themePreference: user?.themePreference || 'system',
     },
   });
 
@@ -89,6 +104,12 @@ export function ProfileContent() {
         phone: user.phone || '',
         dateOfBirth: user.dateOfBirth ? user.dateOfBirth.toISOString().split('T')[0] : '',
         gender: user.gender || '',
+        newsletterSubscribed: user.newsletterSubscribed || false,
+        marketingEmails: user.marketingEmails || false,
+        orderNotifications: user.orderNotifications || true,
+        languagePreference: user.languagePreference || 'fr',
+        currencyPreference: user.currencyPreference || 'EUR',
+        themePreference: user.themePreference || 'system',
       });
     }
   }, [user, form]);
@@ -103,17 +124,22 @@ export function ProfileContent() {
         phone: data.phone ? sanitizeInput(data.phone) : undefined,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
         gender: data.gender || undefined,
+        newsletterSubscribed: data.newsletterSubscribed,
+        marketingEmails: data.marketingEmails,
+        orderNotifications: data.orderNotifications,
+        languagePreference: data.languagePreference,
+        currencyPreference: data.currencyPreference,
+        themePreference: data.themePreference,
       };
 
+      console.log('🔄 Données à envoyer:', sanitizedData);
       const result = await updateProfile(sanitizedData);
 
       if (result.success) {
         setIsEditing(false);
         console.log('✅ Profil mis à jour !');
-        alert('Profil mis à jour avec succès !');
       } else {
         console.error('❌ Erreur:', result.error);
-        alert(result.error || 'Erreur lors de la mise à jour');
       }
     } catch (error) {
       console.error('❌ Erreur lors de la mise à jour:', error);
@@ -126,7 +152,10 @@ export function ProfileContent() {
   const handleLogout = async () => {
     if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
       await logout();
-      router.push('/');
+      // Petit délai pour laisser le temps à la notification de s'afficher
+      setTimeout(() => {
+        router.push('/');
+      }, 1000);
     }
   };
 
@@ -138,6 +167,12 @@ export function ProfileContent() {
       phone: user?.phone || '',
       dateOfBirth: user?.dateOfBirth ? user.dateOfBirth.toISOString().split('T')[0] : '',
       gender: user?.gender || '',
+      newsletterSubscribed: user?.newsletterSubscribed || false,
+      marketingEmails: user?.marketingEmails || false,
+      orderNotifications: user?.orderNotifications || true,
+      languagePreference: user?.languagePreference || 'fr',
+      currencyPreference: user?.currencyPreference || 'EUR',
+      themePreference: user?.themePreference || 'system',
     });
   };
 
@@ -154,10 +189,14 @@ export function ProfileContent() {
 
   return (
     <Tabs defaultValue="personal" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-5">
+      <TabsList className="grid w-full grid-cols-6">
         <TabsTrigger value="personal" className="flex items-center gap-2">
           <User className="h-4 w-4" />
           <span className="hidden sm:inline">Personnel</span>
+        </TabsTrigger>
+        <TabsTrigger value="addresses" className="flex items-center gap-2">
+          <MapPin className="h-4 w-4" />
+          <span className="hidden sm:inline">Adresses</span>
         </TabsTrigger>
         <TabsTrigger value="preferences" className="flex items-center gap-2">
           <Settings className="h-4 w-4" />
@@ -203,8 +242,7 @@ export function ProfileContent() {
           
           <CardContent>
             {isEditing ? (
-              <Form>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   {/* Nom et Prénom */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
@@ -317,6 +355,103 @@ export function ProfileContent() {
                      </div>
                    </div>
 
+                  {/* Préférences */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-medium text-muted-foreground">Préférences</h4>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="languagePreference">Langue</FormLabel>
+                        <FormControl>
+                          <select
+                            id="languagePreference"
+                            {...form.register('languagePreference')}
+                            disabled={isLoading}
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            <option value="fr">Français</option>
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                            <option value="de">Deutsch</option>
+                          </select>
+                        </FormControl>
+                      </div>
+
+                      <div className="space-y-2">
+                        <FormLabel htmlFor="currencyPreference">Devise</FormLabel>
+                        <FormControl>
+                          <select
+                            id="currencyPreference"
+                            {...form.register('currencyPreference')}
+                            disabled={isLoading}
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            <option value="EUR">EUR (€)</option>
+                            <option value="USD">USD ($)</option>
+                            <option value="GBP">GBP (£)</option>
+                          </select>
+                        </FormControl>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <FormLabel htmlFor="themePreference">Thème</FormLabel>
+                      <FormControl>
+                        <select
+                          id="themePreference"
+                          {...form.register('themePreference')}
+                          disabled={isLoading}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <option value="system">Automatique</option>
+                          <option value="light">Clair</option>
+                          <option value="dark">Sombre</option>
+                        </select>
+                      </FormControl>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="newsletterSubscribed"
+                          {...form.register('newsletterSubscribed')}
+                          disabled={isLoading}
+                          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <FormLabel htmlFor="newsletterSubscribed" className="text-sm font-normal">
+                          Recevoir la newsletter
+                        </FormLabel>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="marketingEmails"
+                          {...form.register('marketingEmails')}
+                          disabled={isLoading}
+                          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <FormLabel htmlFor="marketingEmails" className="text-sm font-normal">
+                          Recevoir les emails marketing
+                        </FormLabel>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="orderNotifications"
+                          {...form.register('orderNotifications')}
+                          disabled={isLoading}
+                          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <FormLabel htmlFor="orderNotifications" className="text-sm font-normal">
+                          Notifications de commande
+                        </FormLabel>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Boutons d'action */}
                   <div className="flex gap-3 pt-4">
                     <Button
@@ -340,7 +475,6 @@ export function ProfileContent() {
                     </Button>
                   </div>
                 </form>
-              </Form>
             ) : (
               /* Mode lecture */
               <div className="space-y-6">
@@ -474,6 +608,11 @@ export function ProfileContent() {
             )}
           </CardContent>
         </Card>
+      </TabsContent>
+
+      {/* Onglet Adresses */}
+      <TabsContent value="addresses" className="space-y-6">
+        <AddressManager />
       </TabsContent>
 
       {/* Onglet Préférences */}

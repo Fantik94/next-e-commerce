@@ -3,9 +3,11 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/useToast';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const { showSuccess, showError } = useToast();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -14,12 +16,17 @@ export default function AuthCallbackPage() {
         
         if (error) {
           console.error('❌ Erreur lors du callback:', error);
+          showError('Erreur d\'authentification', 'Une erreur s\'est produite lors de la connexion.');
           router.push('/login?error=auth-callback-error');
           return;
         }
 
         if (data.session) {
           console.log('✅ Authentification réussie via OAuth !');
+          // Délai pour laisser le temps au toast de s'afficher
+          setTimeout(() => {
+            showSuccess('Connexion réussie !', 'Vous êtes maintenant connecté avec Google.');
+          }, 500);
           router.push('/');
         } else {
           console.log('ℹ️ Aucune session trouvée');

@@ -22,10 +22,9 @@ import { useAuth } from '@/hooks/useAuth';
 import BackToHome from '@/components/ui/back-to-home';
 
 export default function RegisterPage() {
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { isAuthenticated, register: registerUser, loginWithGoogle } = useAuth();
+  const { isAuthenticated, isLoading, register: registerUser, loginWithGoogle } = useAuth();
   const router = useRouter();
 
   // Rediriger si déjà connecté
@@ -57,15 +56,17 @@ export default function RegisterPage() {
   const passwordStrength = password ? getPasswordStrength(password) : null;
 
   const onSubmit = async (data: SignUpFormData) => {
-    setIsLoading(true);
-    
     try {
+      console.log('🔄 Début inscription côté composant');
+      
       const sanitizedData = {
         firstName: sanitizeInput(data.firstName),
         lastName: sanitizeInput(data.lastName),
         email: sanitizeInput(data.email),
         password: data.password,
       };
+      
+      console.log('🔄 Données nettoyées:', { ...sanitizedData, password: '[HIDDEN]' });
       
       const result = await registerUser(
         sanitizedData.email,
@@ -74,24 +75,32 @@ export default function RegisterPage() {
         sanitizedData.lastName
       );
       
+      console.log('📊 Résultat inscription côté composant:', result);
+      
       if (result.success) {
-        console.log('✅ Inscription réussie !');
-        router.push('/login?message=account-created');
+        console.log('✅ Inscription réussie');
+        
+        if (result.requiresEmailConfirmation) {
+          console.log('📧 Confirmation d\'email requise');
+          // Rediriger vers une page d'attente de confirmation
+          router.push('/auth/check-email');
+        } else {
+          console.log('🏠 Redirection vers l\'accueil');
+          router.push('/');
+        }
       } else {
-        console.error('❌ Erreur:', result.error);
-        alert(result.error || 'Erreur d\'inscription');
+        console.error('❌ Erreur côté composant:', result.error);
+        // Les erreurs sont déjà affichées par useAuth via les toasts
       }
       
     } catch (error) {
-      console.error('❌ Erreur d\'inscription:', error);
+      console.error('❌ Erreur inattendue côté composant:', error);
+      // Fallback si les toasts ne fonctionnent pas
       alert('Une erreur inattendue s\'est produite.');
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleGoogleSignUp = async () => {
-    setIsLoading(true);
     try {
       const result = await loginWithGoogle();
       
@@ -99,13 +108,11 @@ export default function RegisterPage() {
         console.log('✅ Redirection vers Google...');
       } else {
         console.error('❌ Erreur Google:', result.error);
-        alert(result.error || 'Erreur de connexion Google');
+        // Les erreurs sont déjà affichées par useAuth via les toasts
       }
     } catch (error) {
       console.error('❌ Erreur Google:', error);
       alert('Une erreur inattendue s\'est produite.');
-    } finally {
-      setIsLoading(false);
     }
   };
 

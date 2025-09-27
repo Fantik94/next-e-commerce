@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingCart, Search, User, Menu, Package, Grid3X3, Gamepad2, Info } from 'lucide-react';
+import { ShoppingCart, Search, User, Menu, Package, Grid3X3, Gamepad2, Info, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +15,15 @@ import { CartSidebar } from '@/components/cart/CartSidebar';
 export function Header() {
   const { cart } = useCart();
   const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    // Petit délai pour laisser le temps à la notification de s'afficher
+    setTimeout(() => {
+      router.push('/');
+    }, 1000);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -108,6 +118,14 @@ export function Header() {
                     <User className="h-5 w-5" />
                   </Link>
                 </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={handleLogout}
+                  title="Se déconnecter"
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
               </div>
             ) : (
               <Button variant="ghost" size="icon" asChild>
@@ -189,6 +207,13 @@ export function Header() {
                         <ShoppingCart className="h-5 w-5" />
                         Mes commandes
                       </Link>
+                      <button 
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 text-lg font-medium transition-colors hover:text-primary text-left"
+                      >
+                        <LogOut className="h-5 w-5" />
+                        Se déconnecter
+                      </button>
                     </>
                   ) : (
                     <Link 
