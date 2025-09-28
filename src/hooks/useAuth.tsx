@@ -191,18 +191,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Écouter les changements d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('🔄 Auth state change:', event);
+        console.log('🔄 Auth state change:', event, 'Session:', session ? 'présente' : 'absente');
         setSession(session);
         setSupabaseUser(session?.user ?? null);
         
         if (session?.user) {
           // Récupérer le profil utilisateur
+          console.log('🔄 Récupération du profil pour:', session.user.id);
           const profile = await fetchUserProfile(session.user.id);
+          console.log('📊 Profil récupéré:', profile ? 'succès' : 'échec');
           setUser(profile);
         } else {
+          console.log('🔄 Pas de session, reset du user');
           setUser(null);
         }
         
+        console.log('✅ Auth state change terminé, setIsInitializing(false)');
         setIsInitializing(false);
       }
     );
@@ -237,6 +241,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Inscription avec email/mot de passe
   const register = async (email: string, password: string, firstName: string, lastName: string) => {
+    console.log('🔄 Début de l\'inscription - setIsLoading(true)');
     setIsLoading(true);
     try {
       console.log('🔄 Début de l\'inscription pour:', email);
@@ -268,6 +273,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             first_name: firstName,
             last_name: lastName,
           },
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       });
 
@@ -433,6 +439,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     resetPassword,
     updateProfile,
   };
+
+  // Debug logs temporaires (à retirer en production)
+  useEffect(() => {
+    if (isInitializing || isLoading) {
+      console.log('🔄 Auth State Debug:', {
+        isInitializing,
+        isLoading,
+        combinedLoading: isInitializing || isLoading,
+        user: user ? 'présent' : 'absent',
+        session: session ? 'présent' : 'absent'
+      });
+    }
+  }, [isInitializing, isLoading, user, session]);
 
   return (
     <AuthContext.Provider value={value}>

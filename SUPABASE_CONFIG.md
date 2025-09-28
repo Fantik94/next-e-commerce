@@ -13,6 +13,7 @@ http://localhost:3000
 ```
 http://localhost:3000
 http://localhost:3000/auth/callback
+http://localhost:3000/auth/confirm
 http://localhost:3000/login
 http://localhost:3000/register
 http://localhost:3000/profile
@@ -30,6 +31,7 @@ https://tondomaine.com
 ```
 https://tondomaine.com
 https://tondomaine.com/auth/callback
+https://tondomaine.com/auth/confirm
 https://tondomaine.com/login
 https://tondomaine.com/register
 https://tondomaine.com/profile

@@ -84,9 +84,16 @@ Pour utiliser votre propre serveur email au lieu de celui de Supabase :
 
 ## 📝 **URLs de confirmation**
 
-Le lien dans l'email aura cette structure :
+Le lien dans l'email aura cette structure (selon la version de Supabase) :
 ```
-http://localhost:3000/auth/confirm?token=xxx&type=signup
+# Version PKCE moderne (recommandée)
+http://localhost:3000/auth/confirm?code=xxx
+
+# Version avec tokens d'accès
+http://localhost:3000/auth/confirm?access_token=xxx&refresh_token=yyy&type=signup
+
+# Version classique (avec token_hash)
+http://localhost:3000/auth/confirm?token_hash=xxx&type=signup
 ```
 
-Notre page `/auth/confirm` gère automatiquement ces paramètres.
+Notre page `/auth/confirm` gère automatiquement les trois formats de paramètres.
