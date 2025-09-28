@@ -1,0 +1,43 @@
+-- =====================================================
+-- INSERTION DES DONNÉES D'EXEMPLE DANS SUPABASE
+-- =====================================================
+
+-- Nettoyer les données existantes (optionnel)
+-- DELETE FROM products;
+-- DELETE FROM categories;
+
+-- Insérer les catégories
+INSERT INTO "public"."categories" ("id", "name", "description", "slug", "image_url", "parent_id", "is_active", "sort_order", "created_at", "updated_at") VALUES 
+('0ab4c0a0-7b85-4511-b6ec-c9b17ca43289', 'Vêtements', 'Mode et accessoires', 'vetements', null, null, 'true', '0', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'), 
+('115ac2ad-1529-410f-b242-b9ebb95724d5', 'Maison & Jardin', 'Articles pour la maison et le jardin', 'maison-jardin', null, null, 'true', '0', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'), 
+('9ca7f702-be21-4e2e-9773-7ec2c7e62f3f', 'Électronique', 'Produits électroniques et gadgets', 'electronique', null, null, 'true', '0', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00');
+
+-- Insérer les produits
+INSERT INTO "public"."products" ("id", "name", "description", "slug", "price", "compare_at_price", "cost_price", "sku", "barcode", "stock_quantity", "track_inventory", "allow_backorder", "weight", "dimensions", "category_id", "brand", "tags", "images", "featured_image", "is_active", "is_featured", "seo_title", "seo_description", "created_at", "updated_at") VALUES 
+('31954d1d-e1f2-46eb-ba0d-2a448f842191', 'iPhone 15', 'Dernier smartphone Apple', 'iphone-15', '999.00', null, null, null, null, '50', 'true', 'false', null, null, '9ca7f702-be21-4e2e-9773-7ec2c7e62f3f', 'Apple', null, null, null, 'true', 'false', null, null, '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'), 
+('48288630-4f38-4b4e-96aa-adf1d56183cc', 'T-shirt Basic', 'T-shirt en coton bio', 't-shirt-basic', '29.99', null, null, null, null, '100', 'true', 'false', null, null, '0ab4c0a0-7b85-4511-b6ec-c9b17ca43289', null, null, null, null, 'true', 'false', null, null, '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00');
+
+-- Ajouter plus de produits d'exemple
+INSERT INTO "public"."products" ("id", "name", "description", "slug", "price", "compare_at_price", "cost_price", "sku", "barcode", "stock_quantity", "track_inventory", "allow_backorder", "weight", "dimensions", "category_id", "brand", "tags", "images", "featured_image", "is_active", "is_featured", "seo_title", "seo_description", "created_at", "updated_at") VALUES 
+('550e8400-e29b-41d4-a716-446655440001', 'MacBook Air M3', 'Ordinateur portable ultraléger avec puce M3', 'macbook-air-m3', '1299.00', '1399.00', null, 'MBA-M3-13', null, '25', 'true', 'false', '1.24', '{"length": 30.41, "width": 21.5, "height": 1.13}', '9ca7f702-be21-4e2e-9773-7ec2c7e62f3f', 'Apple', '["laptop", "macbook", "m3"]', '["https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500", "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500"]', 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500', 'true', 'true', 'MacBook Air M3 - Ordinateur portable Apple', 'Découvrez le MacBook Air M3, ordinateur portable ultraléger avec puce M3 et écran Liquid Retina 13 pouces.', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'),
+
+('550e8400-e29b-41d4-a716-446655440002', 'AirPods Pro', 'Écouteurs sans fil avec réduction de bruit active', 'airpods-pro', '279.00', '329.00', null, 'APP-PRO-2', null, '75', 'true', 'false', '0.056', '{"length": 6.0, "width": 4.5, "height": 2.1}', '9ca7f702-be21-4e2e-9773-7ec2c7e62f3f', 'Apple', '["airpods", "wireless", "noise-cancelling"]', '["https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=500", "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500"]', 'https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=500', 'true', 'true', 'AirPods Pro - Écouteurs sans fil Apple', 'AirPods Pro avec réduction de bruit active et son spatial personnalisé.', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'),
+
+('550e8400-e29b-41d4-a716-446655440003', 'PlayStation 5', 'Console de jeux nouvelle génération', 'playstation-5', '549.00', '599.00', null, 'PS5-STD', null, '15', 'true', 'false', '4.5', '{"length": 39.0, "width": 26.0, "height": 9.6}', '9ca7f702-be21-4e2e-9773-7ec2c7e62f3f', 'Sony', '["gaming", "console", "ps5"]', '["https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500", "https://images.unsplash.com/photo-1612198188060-c7c2a3b66eae?w=500"]', 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=500', 'true', 'true', 'PlayStation 5 - Console de jeux Sony', 'Console de jeux nouvelle génération avec SSD ultra-rapide et manette DualSense.', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'),
+
+('550e8400-e29b-41d4-a716-446655440004', 'Samsung Galaxy S24 Ultra', 'Smartphone premium avec S Pen intégré', 'samsung-galaxy-s24-ultra', '1299.00', '1419.00', null, 'SGS24U-256', null, '30', 'true', 'false', '0.232', '{"length": 16.2, "width": 7.9, "height": 0.8}', '9ca7f702-be21-4e2e-9773-7ec2c7e62f3f', 'Samsung', '["smartphone", "android", "s-pen"]', '["https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500", "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500"]', 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500', 'true', 'true', 'Samsung Galaxy S24 Ultra - Smartphone premium', 'Smartphone premium avec S Pen intégré, caméra 200MP et écran Dynamic AMOLED 6,8 pouces.', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'),
+
+('550e8400-e29b-41d4-a716-446655440005', 'Sweat à capuche Premium', 'Sweat à capuche en coton bio confortable', 'sweat-capuche-premium', '49.99', '69.99', null, 'SWEAT-PREM-001', null, '80', 'true', 'false', '0.4', '{"length": 70, "width": 50, "height": 2}', '0ab4c0a0-7b85-4511-b6ec-c9b17ca43289', 'DigitalFADA', '["sweat", "capuche", "coton-bio"]', '["https://images.unsplash.com/photo-1556821840-3a63f95609a4?w=500", "https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=500"]', 'https://images.unsplash.com/photo-1556821840-3a63f95609a4?w=500', 'true', 'false', 'Sweat à capuche Premium - Vêtement confortable', 'Sweat à capuche en coton bio confortable et durable.', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'),
+
+('550e8400-e29b-41d4-a716-446655440006', 'Jeans Slim Fit', 'Jeans slim fit en denim stretch', 'jeans-slim-fit', '79.99', null, null, 'JEANS-SLIM-001', null, '60', 'true', 'false', '0.6', '{"length": 110, "width": 40, "height": 3}', '0ab4c0a0-7b85-4511-b6ec-c9b17ca43289', 'DigitalFADA', '["jeans", "slim", "denim"]', '["https://images.unsplash.com/photo-1542272604-787c3835535d?w=500", "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500"]', 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500', 'true', 'false', 'Jeans Slim Fit - Pantalon denim', 'Jeans slim fit en denim stretch confortable et élégant.', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'),
+
+('550e8400-e29b-41d4-a716-446655440007', 'Cafetière Expresso', 'Machine à café expresso automatique', 'cafetiere-expresso', '299.99', '399.99', null, 'CAFE-EXP-001', null, '20', 'true', 'false', '8.5', '{"length": 35, "width": 25, "height": 40}', '115ac2ad-1529-410f-b242-b9ebb95724d5', 'Breville', '["cafe", "expresso", "automatique"]', '["https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500", "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=500"]', 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500', 'true', 'true', 'Cafetière Expresso - Machine à café automatique', 'Machine à café expresso automatique pour un café parfait à la maison.', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00'),
+
+('550e8400-e29b-41d4-a716-446655440008', 'Aspirateur Robot', 'Aspirateur robot intelligent avec navigation', 'aspirateur-robot', '199.99', '299.99', null, 'ROBOT-VAC-001', null, '35', 'true', 'false', '3.2', '{"length": 35, "width": 35, "height": 9}', '115ac2ad-1529-410f-b242-b9ebb95724d5', 'iRobot', '["aspirateur", "robot", "intelligent"]', '["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500", "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500"]', 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500', 'true', 'false', 'Aspirateur Robot - Nettoyage automatique', 'Aspirateur robot intelligent avec navigation et programmation.', '2025-09-26 15:51:40.787178+00', '2025-09-26 15:51:40.787178+00');
+
+-- Mettre à jour les compteurs de produits par catégorie
+UPDATE categories SET productCount = (
+  SELECT COUNT(*) FROM products 
+  WHERE products.category_id = categories.id 
+  AND products.is_active = true
+);

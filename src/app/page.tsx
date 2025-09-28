@@ -5,16 +5,40 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Star, Truck, Shield, Headphones, Gamepad2, Monitor, Smartphone, Tv } from 'lucide-react';
-import { products, categories } from '@/data/products';
 import { ProductCard } from '@/components/product/ProductCard';
+import { useCategories, useFeaturedProducts } from '@/hooks/useSupabaseData';
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
 
 export default function Home() {
-  // Récupération des produits mis en avant
-  const featuredProducts = products.filter(product => product.isFeatured).slice(0, 4);
-  const newProducts = products.filter(product => product.isNew).slice(0, 3);
+  // Récupération des données depuis Supabase
+  const { categories, loading: categoriesLoading, error: categoriesError } = useCategories();
+  const { products: featuredProducts, loading: featuredLoading, error: featuredError } = useFeaturedProducts(4);
+  
+  // Pour les nouveaux produits, on utilise les produits récents
+  const { products: allProducts, loading: productsLoading } = useFeaturedProducts(50);
+  const newProducts = allProducts?.slice(0, 3) || [];
+
+  // Gestion des états de chargement
+  const isLoading = categoriesLoading || featuredLoading || productsLoading;
+  const hasError = categoriesError || featuredError;
+
+  if (hasError) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Erreur de chargement</h2>
+        <p className="text-gray-600 mb-6">
+          {categoriesError || featuredError || 'Une erreur est survenue lors du chargement des données'}
+        </p>
+        <Button onClick={() => window.location.reload()}>
+          Réessayer
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-16">
+      {isLoading && <LoadingOverlay />}
       
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-blue-50 to-indigo-100 py-20">
@@ -108,7 +132,7 @@ export default function Home() {
             <p className="text-xl text-gray-600">Trouvez exactement ce que vous cherchez</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {categories.map((category) => (
+            {categories?.map((category) => (
               <Card key={category.id} className="hover:shadow-lg transition-shadow cursor-pointer">
                 <CardContent className="p-6 text-center space-y-4">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10">
@@ -117,6 +141,9 @@ export default function Home() {
                     {category.name === 'Ordinateurs' && <Monitor className="h-8 w-8 text-primary" />}
                     {category.name === 'Smartphones & Tablettes' && <Smartphone className="h-8 w-8 text-primary" />}
                     {category.name === 'TV & Multimédia' && <Tv className="h-8 w-8 text-primary" />}
+                    {category.name === 'Électronique' && <Smartphone className="h-8 w-8 text-primary" />}
+                    {category.name === 'Vêtements' && <Tv className="h-8 w-8 text-primary" />}
+                    {category.name === 'Maison & Jardin' && <Tv className="h-8 w-8 text-primary" />}
                   </div>
                   <h3 className="text-xl font-semibold">{category.name}</h3>
                   <p className="text-gray-600 text-sm">{category.description}</p>
@@ -142,7 +169,7 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
+            {featuredProducts?.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -166,7 +193,7 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newProducts.map((product) => (
+            {newProducts?.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}

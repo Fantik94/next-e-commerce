@@ -2,15 +2,17 @@
 
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import Image from 'next/image';
+import { ProductImageGallery } from '@/components/ui/product-image';
+import { useProductImages } from '@/hooks/useProductImages';
 import Link from 'next/link';
-import { getProductById, products } from '@/data/products';
 import { useCart } from '@/hooks/useCart';
+import { useProduct, useProducts } from '@/hooks/useSupabaseData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ProductCard } from '@/components/product/ProductCard';
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { 
   Star, 
   Heart, 
@@ -29,7 +31,13 @@ export default function ProductDetailPage() {
   const { addItem } = useCart();
   const params = useParams();
   const productId = params.id as string;
-  const product = getProductById(productId);
+  
+  // Récupération des données depuis Supabase
+  const { product, loading: productLoading, error: productError } = useProduct(productId);
+  const { products: allProducts } = useProducts(50, 0);
+  
+  // Récupération des images depuis Supabase Storage
+  const { images: storageImages, featuredImage, loading: imagesLoading } = useProductImages(productId);
   
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -37,11 +45,22 @@ export default function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
 
-  if (!product) {
+  // Gestion des états de chargement et d'erreur
+  if (productLoading || imagesLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <LoadingOverlay />
+      </div>
+    );
+  }
+
+  if (productError || !product) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold mb-4">Produit non trouvé</h1>
-        <p className="text-gray-600 mb-8">Le produit que vous recherchez n'existe pas.</p>
+        <p className="text-gray-600 mb-8">
+          {productError || 'Le produit que vous recherchez n\'existe pas.'}
+        </p>
         <Button asChild>
           <Link href="/products">Retour au catalogue</Link>
         </Button>
@@ -50,9 +69,9 @@ export default function ProductDetailPage() {
   }
 
   // Produits similaires (même catégorie, excluant le produit actuel)
-  const similarProducts = products
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
+  const similarProducts = allProducts
+    ?.filter(p => p.category === product.category && p.id !== product.id)
+    .slice(0, 4) || [];
 
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -91,74 +110,46 @@ export default function ProductDetailPage() {
         
         {/* Galerie d'images */}
         <div className="space-y-4">
+          <ProductImageGallery
+            images={storageImages.length > 0 ? storageImages : (product.images || [])}
+            featuredImage={featuredImage}
+            alt={product.name}
+            className="w-full"
+            onImageClick={(index) => setSelectedImageIndex(index)}
+          />
           
-          {/* Image principale */}
-          <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100">
-            <Image
-              src={product.images[selectedImageIndex]}
-              alt={product.name}
-              fill
-              className="object-cover transition-transform duration-500 hover:scale-105"
-              priority
-            />
-            
-            {/* Badges */}
-            <div className="absolute top-4 left-4 flex flex-col gap-2">
-              {product.isNew && (
-                <Badge className="bg-green-500 hover:bg-green-600">
-                  Nouveau
-                </Badge>
-              )}
-              {discountPercentage > 0 && (
-                <Badge variant="destructive">
-                  -{discountPercentage}%
-                </Badge>
-              )}
-            </div>
-
-            {/* Actions */}
-            <div className="absolute top-4 right-4 flex flex-col gap-2">
-              <Button
-                size="icon"
-                variant="secondary"
-                className="rounded-full backdrop-blur-sm bg-white/90"
-                onClick={() => setIsFavorite(!isFavorite)}
-              >
-                <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
-              </Button>
-              <Button
-                size="icon"
-                variant="secondary"
-                className="rounded-full backdrop-blur-sm bg-white/90"
-              >
-                <Share2 className="h-4 w-4" />
-              </Button>
-            </div>
+          {/* Badges */}
+          <div className="flex gap-2">
+            {product.isNew && (
+              <Badge className="bg-green-500 hover:bg-green-600">
+                Nouveau
+              </Badge>
+            )}
+            {discountPercentage > 0 && (
+              <Badge variant="destructive">
+                -{discountPercentage}%
+              </Badge>
+            )}
           </div>
 
-          {/* Miniatures */}
-          {product.images.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImageIndex(index)}
-                  className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
-                    selectedImageIndex === index 
-                      ? 'border-primary ring-2 ring-primary/20' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <Image
-                    src={image}
-                    alt={`${product.name} ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Actions */}
+          <div className="flex gap-2">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="rounded-full"
+              onClick={() => setIsFavorite(!isFavorite)}
+            >
+              <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="rounded-full"
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Informations produit */}

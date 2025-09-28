@@ -9,6 +9,7 @@ export interface Product {
   category: string;
   brand: string;
   images: string[];
+  featuredImage?: string; // Image principale
   stock: number;
   rating: number;
   reviewCount: number;

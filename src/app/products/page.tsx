@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { products } from '@/data/products';
 import { ProductFilters, SearchParams } from '@/types';
 import { useCart } from '@/hooks/useCart';
+import { useProducts, useSearchProducts } from '@/hooks/useSupabaseData';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ProductFilters as FiltersComponent } from '@/components/product/ProductFilters';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Search, Grid, List, SlidersHorizontal } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { LoadingOverlay } from '@/components/ui/loading-overlay';
+import { StorageDebug } from '@/components/debug/StorageDebug';
 
 export default function ProductsPage() {
   const { addItem } = useCart();
@@ -26,55 +28,52 @@ export default function ProductsPage() {
     limit: 12
   });
 
+  // Récupération des données depuis Supabase
+  const { products, loading: productsLoading, error: productsError } = useProducts(50, 0);
+  const { products: searchResults, loading: searchLoading } = useSearchProducts(searchQuery, 50);
+
   // Filtrage et tri des produits
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = [...products];
+    // Utiliser les résultats de recherche si une recherche est en cours
+    let filtered = searchQuery.trim() ? [...(searchResults || [])] : [...(products || [])];
 
-    // Recherche textuelle
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(query) ||
-        product.description.toLowerCase().includes(query) ||
-        product.brand.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query)
-      );
-    }
-
-    // Application des filtres
-    const { filters } = searchParams;
+    // Si pas de recherche, appliquer les filtres sur tous les produits
+    if (!searchQuery.trim()) {
+      // Application des filtres
+      const { filters } = searchParams;
     
-    if (filters.category) {
-      filtered = filtered.filter(product => product.category === filters.category);
-    }
-    
-    if (filters.brand) {
-      filtered = filtered.filter(product => product.brand === filters.brand);
-    }
-    
-    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
-      filtered = filtered.filter(product => {
-        const price = product.price;
-        const minOk = filters.minPrice === undefined || price >= filters.minPrice;
-        const maxOk = filters.maxPrice === undefined || price <= filters.maxPrice;
-        return minOk && maxOk;
-      });
-    }
-    
-    if (filters.rating) {
-      filtered = filtered.filter(product => product.rating >= filters.rating!);
-    }
-    
-    if (filters.inStock) {
-      filtered = filtered.filter(product => product.stock > 0);
-    }
-    
-    if (filters.isNew) {
-      filtered = filtered.filter(product => product.isNew);
-    }
-    
-    if (filters.isFeatured) {
-      filtered = filtered.filter(product => product.isFeatured);
+      if (filters.category) {
+        filtered = filtered.filter(product => product.category === filters.category);
+      }
+      
+      if (filters.brand) {
+        filtered = filtered.filter(product => product.brand === filters.brand);
+      }
+      
+      if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+        filtered = filtered.filter(product => {
+          const price = product.price;
+          const minOk = filters.minPrice === undefined || price >= filters.minPrice;
+          const maxOk = filters.maxPrice === undefined || price <= filters.maxPrice;
+          return minOk && maxOk;
+        });
+      }
+      
+      if (filters.rating) {
+        filtered = filtered.filter(product => product.rating >= filters.rating!);
+      }
+      
+      if (filters.inStock) {
+        filtered = filtered.filter(product => product.stock > 0);
+      }
+      
+      if (filters.isNew) {
+        filtered = filtered.filter(product => product.isNew);
+      }
+      
+      if (filters.isFeatured) {
+        filtered = filtered.filter(product => product.isFeatured);
+      }
     }
 
     // Tri
@@ -104,7 +103,7 @@ export default function ProductsPage() {
     });
 
     return filtered;
-  }, [searchQuery, searchParams]);
+  }, [searchQuery, searchParams, products, searchResults]);
 
   const handleFiltersChange = (newFilters: ProductFilters) => {
     setSearchParams(prev => ({
@@ -140,8 +139,32 @@ export default function ProductsPage() {
     value !== undefined && value !== false
   ).length;
 
+  // Gestion des états de chargement et d'erreur
+  const isLoading = productsLoading || searchLoading;
+  const hasError = productsError;
+
+  if (hasError) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Erreur de chargement</h2>
+        <p className="text-gray-600 mb-6">
+          {productsError || 'Une erreur est survenue lors du chargement des produits'}
+        </p>
+        <Button onClick={() => window.location.reload()}>
+          Réessayer
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
+      {isLoading && <LoadingOverlay />}
+      
+      {/* Debug Storage - À retirer en production */}
+      <div className="mb-8">
+        <StorageDebug productId="31954d1d-e1f2-46eb-ba0d-2a448f842191" />
+      </div>
       
       {/* Header */}
       <div className="mb-8">

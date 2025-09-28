@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ProductFilters as Filters } from '@/types';
-import { categories } from '@/data/products';
+import { useCategories } from '@/hooks/useSupabaseData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -27,6 +27,9 @@ export function ProductFilters({
   productCount 
 }: ProductFiltersProps) {
   const [priceRange, setPriceRange] = useState([filters.minPrice || 0, filters.maxPrice || 2000]);
+  
+  // Récupération des catégories depuis Supabase
+  const { categories, loading: categoriesLoading } = useCategories();
 
   const handleCategoryChange = (category: string, checked: boolean) => {
     onFiltersChange({
@@ -119,26 +122,30 @@ export function ProductFilters({
         <div className="space-y-3">
           <h4 className="font-medium text-sm text-gray-900">Catégories</h4>
           <div className="space-y-2">
-            {categories.map((category) => (
-              <div key={category.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`category-${category.id}`}
-                  checked={filters.category === category.name}
-                  onCheckedChange={(checked) => 
-                    handleCategoryChange(category.name, checked as boolean)
-                  }
-                />
-                <label
-                  htmlFor={`category-${category.id}`}
-                  className="text-sm text-gray-700 cursor-pointer flex-1"
-                >
-                  {category.name}
-                </label>
-                <Badge variant="outline" className="text-xs">
-                  {category.productCount}
-                </Badge>
-              </div>
-            ))}
+            {categoriesLoading ? (
+              <div className="text-sm text-gray-500">Chargement des catégories...</div>
+            ) : (
+              categories?.map((category) => (
+                <div key={category.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`category-${category.id}`}
+                    checked={filters.category === category.name}
+                    onCheckedChange={(checked) => 
+                      handleCategoryChange(category.name, checked as boolean)
+                    }
+                  />
+                  <label
+                    htmlFor={`category-${category.id}`}
+                    className="text-sm text-gray-700 cursor-pointer flex-1"
+                  >
+                    {category.name}
+                  </label>
+                  <Badge variant="outline" className="text-xs">
+                    {category.productCount}
+                  </Badge>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

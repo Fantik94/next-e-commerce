@@ -7,7 +7,8 @@ import { useCart } from '@/hooks/useCart';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { OptimizedImage } from '@/components/ui/optimized-image';
+import { ProductImage } from '@/components/ui/product-image';
+import { useProductImages } from '@/hooks/useProductImages';
 import { Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 
 interface ProductCardProps {
@@ -28,8 +29,15 @@ function ProductCardComponent({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isAdding, setIsAdding] = useState(false); // Protection contre double clic
   
+  // Récupérer les images depuis Supabase Storage
+  const { images: storageImages, featuredImage, loading: imagesLoading } = useProductImages(product.id);
+  
   const inCart = isInCart(product.id);
   const cartQuantity = getItemQuantity(product.id);
+
+  // Utiliser les images du storage ou les images de fallback
+  const displayImages = storageImages.length > 0 ? storageImages : (product.images || []);
+  const currentImage = displayImages[currentImageIndex] || featuredImage;
 
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -72,20 +80,19 @@ function ProductCardComponent({
         <div className="relative overflow-hidden bg-gray-50">
           <Link href={`/products/${product.id}`} prefetch={true}>
             <div className="relative h-64 w-full">
-              <OptimizedImage
-                src={product.images[currentImageIndex] || product.images[0]}
+              <ProductImage
+                src={currentImage}
                 alt={product.name}
-                fill
-                className="transition-transform duration-500 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                priority={false}
-                loading="lazy"
+                width={400}
+                height={256}
+                className="w-full h-full transition-transform duration-500 group-hover:scale-110"
+                options={{ size: 'medium' }}
               />
               
               {/* Image Navigation Dots */}
-              {product.images.length > 1 && (
+              {displayImages.length > 1 && (
                 <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                  {product.images.map((_, index) => (
+                  {displayImages.map((_, index) => (
                     <button
                       key={index}
                       onClick={(e) => {
